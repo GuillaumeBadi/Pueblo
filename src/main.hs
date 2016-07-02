@@ -1,10 +1,11 @@
 
 module Main where
 import Data.Map (Map)
+import Data.Maybe
 import qualified Data.Map.Strict as Map
 
 {- An Expression is either:
-      a Constant with a name (a String) TODO: a constant can be any value
+      a Constant with a name (a String) TODO: a constant can be any type
       a Variable with a name (a String)
       a List of expressions -}
 data Expression
@@ -12,6 +13,8 @@ data Expression
   | Var String
   | List [Expression]
   deriving (Show, Eq)
+
+type Binding = Map String Expression
 
 -- returns True if the parameter is a Constant
 isConstant :: Expression -> Bool
@@ -31,7 +34,7 @@ isList _        = False
 {- Takes a Map such as [(X, Constant value)] and an expression
    and returns the expression with variables
    replaced by elements of the Map -}
-substitute :: Map String Expression -> Expression -> Expression
+substitute :: Binding -> Expression -> Expression
 substitute m c | isConstant c = c
 substitute m (List l)         = List $ map (substitute m) l
 substitute m v@(Var name)     = case Map.lookup name m of
@@ -54,7 +57,7 @@ occurs var      (List l)     = any (occurs var) l
   If the Unification fails, we return Nothing
   Otherwise, a map with variables values :
     [(X, Constant 3), (Y, List g(a))] -}
-unify :: Expression -> Expression -> Maybe (Map String Expression)
+unify :: Expression -> Expression -> Maybe (Binding)
 
 {- If both expressions are Constants:
     We cannot unify them if they are different:
@@ -115,7 +118,12 @@ unify (List e1@(h1:t1)) (List e2@(h2:t2))
                             -- So we can merge them
                             Just subs2 -> Just (Map.union subs1 subs2)
 
-e1 = List [ Constant "has", Constant "guillaume", List [ Constant "pet", Constant "Socrate" ] ]
-e2 = List [ Constant "has", Var "Owner", List [ Constant "pet", Var "Name" ] ]
+solve :: [Expression] -> Expression -> [Binding]
+solve facts query = mapMaybe (unify query) facts
 
-main = do print $ unify e1 e2
+likes :: Expression -> Expression -> Expression
+likes x y = List $ [ x, y ]
+
+facts = [likes (Constant "romeo") (Constant "juliet"), likes (Constant "juliet") (Constant "romeo")]
+
+main = do print $ solve facts (likes (Var "X") (Var "Y"))
