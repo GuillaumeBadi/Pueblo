@@ -2,6 +2,7 @@
 module Main where
 import Data.Map (Map)
 import Data.Maybe
+import Data.List
 import qualified Data.Map.Strict as Map
 
 {- An Expression is either:
@@ -122,8 +123,15 @@ solve :: [Expression] -> Expression -> [Binding]
 solve facts query = mapMaybe (unify query) facts
 
 likes :: Expression -> Expression -> Expression
-likes x y = List $ [ x, y ]
+likes x y = List $ [ (Constant "likes"), x, y ]
 
-facts = [likes (Constant "romeo") (Constant "juliet"), likes (Constant "juliet") (Constant "romeo")]
+expressionToString :: Expression -> String
+expressionToString (Constant x) = x
+expressionToString (Var x) = x ++ "?"
+expressionToString (List ((Constant x):xs))
+  = x ++ " " ++ (intercalate " " (map expressionToString xs))
 
-main = do print $ solve facts (likes (Var "X") (Var "Y"))
+bindingToString b
+  = intercalate ", " $ map (\(k, v) -> k ++ " is " ++ (expressionToString v)) (Map.assocs b)
+
+main = do print $ bindingToString ((Map.insert "Y" (Constant "paul") $ Map.insert "X" (Constant "guillaume") Map.empty) :: Binding)
