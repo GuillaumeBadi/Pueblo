@@ -1,3 +1,0 @@
-#!/bin/sh
-
-ghc -o main src/main.hs
