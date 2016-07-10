@@ -30,4 +30,5 @@ facts =
  , father john bob
  , grandFather x y :- [ father x z, father z y ] ]
 
-test = boolSolver facts (grandFather john bob)
+test = boolSolver facts (grandFather john bob) -- False
+test2 = boolSolver facts (grandFather john lola) -- True
