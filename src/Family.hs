@@ -32,3 +32,4 @@ facts =
 
 test = boolSolver facts (grandFather john bob) -- False
 test2 = boolSolver facts (grandFather john lola) -- True
+test3 = solve facts (grandFather john who) -- [(who, lola)]
