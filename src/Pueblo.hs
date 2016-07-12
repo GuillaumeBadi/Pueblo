@@ -161,6 +161,8 @@ bindingToString b
   = intercalate ", " $
     map (\(k, v) -> k ++ ": " ++ expressionToString v) (Map.assocs b)
 
+mergeBindings :: Binding -> [Binding] -> [Binding]
+mergeBindings b bs = map (Map.union b) $ bs
 
 {- Given a list of facts, a list of constraints, and an expression e
    If the list of constraints is empty, return [ ]
@@ -168,7 +170,7 @@ bindingToString b
    else we get the bindings from solving x. If Nothing -> Nothing
       otherwise we test each branch with the bindings and returns the filtered result -}
 solveConstraints :: [Expression] -> [Expression] -> Expression -> Maybe [Binding]
-solveConstraints fs [] e = Just []
+solveConstraints fs [] e = Just [Map.empty]
 solveConstraints _ (x:_) e | x == e = Just []
 solveConstraints fs (x:xs) e = case solve facts x of
                                     Nothing -> Nothing
@@ -177,8 +179,8 @@ solveConstraints fs (x:xs) e = case solve facts x of
                                                      let tests = mapMaybe testBranch branches
                                                      if null tests then Nothing else Just $ concat tests
                                     where testBranch = \(bs, branch) -> case solveConstraints facts branch e of
-                                                                               Nothing -> Nothing
-                                                                               Just res -> Just (bs : res)
+                                                                             Nothing -> Nothing
+                                                                             Just res -> Just $ mergeBindings bs res
                                           facts = filter (\f -> if isConstraint f && predicate f == predicate e
                                                                 then False
                                                                 else True) fs
