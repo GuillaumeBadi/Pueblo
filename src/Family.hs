@@ -61,6 +61,6 @@ facts = [ father bob lola
         -- , brotherOrSister x y :- [ brother x y ]
         -- , brotherOrSister x y :- [ sister x y ]
 
-test = case solve facts (grandFather who1 lola) of
+test = case solve facts (grandFather who1 lola) of -- (who1: john) 
             Nothing -> print "Nothing"
             Just bs -> print $ bindingsToString bs
