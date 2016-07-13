@@ -48,13 +48,11 @@ facts = [ father bob lola
         , father fred john
         , father albert fred
         , brother albert fred
-        , brother x y :- [ brother y x ]
+        , brother x y :- [ brother y x ] -- x is y's brother if y is x's brother
         , grandFather x y :- [ father x z, father z y ]
         , grandgrandFather v w :- [ grandFather v z, father z w ]
         , parent x y :- [ father x y ]
-        , parent x y :- [ mother x y ]
-        , ancestor x y :- [ parent x y ]
-        , ancestor v w :- [ parent v z, ancestor z w ] ]
+        , parent x y :- [ mother x y ] ]
         -- , uncle x y :- [ parent z y, brother x z ]
         -- , aunt x y :- [ parent z y, sister x z ]
         -- , cousin x y :- [ parent z x, parent w y, brotherOrSister z w ]
@@ -63,6 +61,6 @@ facts = [ father bob lola
         -- , brotherOrSister x y :- [ brother x y ]
         -- , brotherOrSister x y :- [ sister x y ]
 
-test = case solve facts (ancestor who1 lola) of
+test = case solve facts (grandFather who1 lola) of
             Nothing -> print "Nothing"
             Just bs -> print $ bindingsToString bs
