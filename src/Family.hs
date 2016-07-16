@@ -1,68 +1,58 @@
 
 module Family where
 
-import Pueblo
+import          Pueblo
+
+import           Data.Map         (Map)
+import qualified Data.Map.Strict  as Map
+
+startWith v letter binding
+  = case Map.lookup v binding of
+      Nothing -> False
+      Just (Constant (e:es)) -> e == letter
 
 -- Predicates
-male x = List [Constant "male", x]
-female x = List [Constant "female", x]
-parent x y = List [Constant "parent", x, y]
-father x y = List [Constant "father", x, y]
-mother x y = List [Constant "mother", x, y]
-uncle x y = List [Constant "uncle", x, y]
-brother x y = List [Constant "brother", x, y]
-grandFather x y = List [Constant "grandFather", x, y]
-ancestor x y = List [Constant "ancestor", x, y]
-grandgrandFather x y = List [Constant "grandgrandFather", x, y]
-has x y = List [Constant "has", x, y]
-pet x y = List [Constant "pet", x, y]
+male x          = List [ Constant "male",        x    ]
+female x        = List [ Constant "female",      x    ]
+father x y      = List [ Constant "father",      x, y ]
+mother x y      = List [ Constant "mother",      x, y ]
+sibling x y     = List [ Constant "sibling",     x, y ]
+grandFather x y = List [ Constant "grandFather", x, y ]
+ancestor x y    = List [ Constant "ancestor",    x, y ]
+likes x y       = List [ Constant "likes",       x, y ]
 
-bob = Constant "bob"
-lisa = Constant "lisa"
-john = Constant "john"
-paul = Constant "paul"
-lea = Constant "lea"
-lola = Constant "lola"
-fred = Constant "fred"
-albert = Constant "albert"
-mehdi = Constant "mehdi"
+bob     = Constant "bob"
+lisa    = Constant "lisa"
+john    = Constant "john"
+paul    = Constant "paul"
+lea     = Constant "lea"
+lola    = Constant "lola"
+fred    = Constant "fred"
+albert  = Constant "albert"
+mehdi   = Constant "mehdi"
 
-cat = Constant "cat"
+cat     = Constant "cat"
 sweetie = Constant "sweetie"
 
-x = Var "x"
-y = Var "y"
-z = Var "z"
-a = Var "a"
-v = Var "v"
-w = Var "w"
+x       = Var "x"
+y       = Var "y"
+z       = Var "z"
 
-who1 = Var "who1"
-who2 = Var "who2"
+facts = [ father bob john
+        , father john albert
+        , father albert lola
+        , ancestor x y :- [ father x y ]
+        , ancestor x y :- [ father x z, ancestor z y ] ]
 
-facts = [ father bob lola
-        , has mehdi (pet cat sweetie)
-        , brother bob paul
-        , mother lea lola
-        , father john bob
-        , father fred john
-        , father albert fred
-        , brother albert fred
-        , brother x y :- [ brother y x ]
-        , grandFather x y :- [ father x z, father z y ]
-        , grandgrandFather v w :- [ grandFather v z, father z w ]
-        , parent x y :- [ father x y ]
-        , parent x y :- [ mother x y ]
-        , ancestor x y :- [ parent x y ]
-        , ancestor v w :- [ parent v z, ancestor z w ] ]
-        -- , uncle x y :- [ parent z y, brother x z ]
-        -- , aunt x y :- [ parent z y, sister x z ]
-        -- , cousin x y :- [ parent z x, parent w y, brotherOrSister z w ]
-        -- , parent x y :- [ father x y ]
-        -- , parent x y :- [ mother x y ]
-        -- , brotherOrSister x y :- [ brother x y ]
-        -- , brotherOrSister x y :- [ sister x y ]
+query
+  = father x y
+    :-  [ father z x ]
+    :<< [ startWith x 'j' ]
 
-test = case solve facts (ancestor who1 lola) of
+test2 = case solve [] facts (ancestor bob lola) of
             Nothing -> print "Nothing"
             Just bs -> print $ bindingsToString bs
+
+test = case solve [] facts query of
+          Nothing -> print "Nothing"
+          Just bindings -> print $ bindingsToString bindings

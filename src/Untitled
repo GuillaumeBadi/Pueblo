@@ -1,0 +1,12 @@
+ - Solve ancestors problem
+ - Filters
+ - DB/API
+  - Inference
+  - Prune unused rules/false rules
+ - NLP to Fact/Rule
+
+Notes:
+ - Logique Floue
+
+Tests and use cases:
+ - Cities from wikipedia
