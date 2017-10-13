@@ -1,0 +1,6 @@
+
+has guillaume s8+
+from s8+ samsung
+type samsung company
+
+(from y x) :- (has guillaume y)

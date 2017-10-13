@@ -39,7 +39,7 @@ y       = Var "y"
 z       = Var "z"
 
 facts = [ father bob john
-        , father john albert
+        , father bob albert
         , father albert lola
         , ancestor x y :- [ father x y ]
         , ancestor x y :- [ father x z, ancestor z y ] ]
@@ -49,7 +49,7 @@ query
     :-  [ father z x ]
     :<< [ startWith x 'j' ]
 
-test2 = case solve [] facts (ancestor bob lola) of
+test2 = case solve [] facts (father bob x) of
             Nothing -> print "Nothing"
             Just bs -> print $ bindingsToString bs
 
