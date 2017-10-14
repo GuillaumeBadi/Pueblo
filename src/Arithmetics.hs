@@ -16,9 +16,12 @@ import Parse
 import Helpers
 import Solver
 
-facts = makeFacts [ "romeo loves juliet"
-                  , "X loves Y if Y loves X" ]
+facts = makeFacts [ "joao est le pere de rafael"
+                  , "X est enfant de Y if Y est le pere de X"
+                  , "rogerio est le pere de joao"
+                  , "X est ancetre de Y if X est le pere de Y"
+                  , "X est ancetre de Y if X est le pere de Z and Z est ancetre de Y "]
 
-query = readFact "juliet loves Who"
+query = readFact "Qui est ancetre de rafael"
 
 run = solve [] facts query
